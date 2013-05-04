@@ -18,17 +18,17 @@
 #
 #
 #
-#   En kurskod kommer alltid fÃƒÆ’Ã‚Â¶rst. NÃƒÆ’Ã‚Â¤r vi lÃƒÆ’Ã‚Â¤st in en kurskod kan vi lÃƒÆ’Ã‚Â¤sa in en href som sÃƒÆ’Ã‚Â¤ger att hÃƒÆ’Ã‚Â¤r kommer kursnamnet.
-#   Sen kollar vi efter datumstrÃƒÆ’Ã‚Â¤ngar och lÃƒÆ’Ã‚Â¤gger till dem i en dict med den aktuella kursen.
+#   En kurskod kommer alltid först. När vi läst in en kurskod kan vi läsa in en href som säger att här kommer kursnamnet.
+#   Sen kollar vi efter datumsträngar och lägger till dem i en dict med den aktuella kursen.
 #   Sen sparar vi allt och outputar fint
 
 #   Hitta en kurskod och spara som AKTUELL kurskod i parsern.
-#   Samtidigt skapas ett nytt entry i dicten om det inte redan finns, fÃƒÆ’Ã‚Â¶r denna kurs
+#   Samtidigt skapas ett nytt entry i dicten om det inte redan finns, för denna kurs
 #   Sedan extraheras kursens namn ur parsern
 #   Samt upp till 3 datum
-#   Sedan kommer nÃƒÆ’Ã‚Â¤sta kurs, och repeat
+#   Sedan kommer nästa kurs, och repeat
 
-#   NÃƒÆ’Ã‚Â¤r alla kurser ÃƒÆ’Ã‚Â¤r inlÃƒÆ’Ã‚Â¤sta i en bra tabell kan vi outputta dem i en annan form. Det lÃƒÆ’Ã‚Â¶ser vi sen.
+#   När alla kurser är inlästa i en bra tabell kan vi outputta dem i en annan form. Det löser vi sen.
 
 
 # Author:      natwei
@@ -46,7 +46,7 @@ import requests
 from html.parser import HTMLParser
 import datetime
 
-#Efter att ha lÃƒÆ’Ã‚Â¤st in alla datum konverteras till detta format som ÃƒÆ’Ã‚Â¤r lÃƒÆ’Ã‚Â¤mpligt fÃƒÆ’Ã‚Â¶r output
+#Efter att ha läst in alla datum konverteras till detta format som är lämpligt för output
 class TentaInstans():
     def __init__(self):
         self.date = None
@@ -71,7 +71,7 @@ class TentaInstans():
         return "fm"
 
 
-#AnvÃƒÆ’Ã‚Â¤nds vid inlÃƒÆ’Ã‚Â¤sning
+#Används vid inläsning
 class Tentadatum ():
     def __init__(self):
         self.year = None
@@ -147,7 +147,7 @@ class MyHTMLParser(HTMLParser):
                         self.courseCode = data
                         self.tabell[data] = CourseEntry ()
                         self.tabell[data].code = data
-            if self.findCourseName: #registrera namnet och stÃƒÆ’Ã‚Â¤ng sedan av denna sÃƒÆ’Ã‚Â¶kfunktion
+            if self.findCourseName: #registrera namnet och stäng sedan av denna sökfunktion
                         self.tabell[self.courseCode].name = data
                         self.findCourseName = False
             t = self.isDate (data)
@@ -181,7 +181,7 @@ def main():
     for k,v in datatabell.items():
         for d in v.datumlista:
             if d.time == "em":
-                d.time = "kv"  #em kallas istÃƒÆ’Ã‚Â¤llet kvÃƒÆ’Ã‚Â¤ll, eftersom kv kommer efter fm, sÃƒÆ’Ã‚Â¥ om tvÃƒÆ’Ã‚Â¥ tentor har samma datum kan string compare sortera dem rÃƒÆ’Ã‚Â¤tt enligt "fm" "em"
+                d.time = "kv"  #em kallas istället kväll, eftersom kv kommer efter fm, så om två tentor har samma datum kan string compare sortera dem rätt enligt "fm" "em"
             i = TentaInstans()
             i.date = d.year+d.month+d.day+d.time
             i.courseCode = v.code
