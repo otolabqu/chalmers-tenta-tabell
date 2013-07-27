@@ -7,8 +7,10 @@
 # Todo: Make the whole process automated for all the BSc and MSc programmes in Chalmers and output a complete webpage with all of those. Then publish it.
 # Todo: Add to each tentainstans a tag specifying which programme it is part of. Then make a searchable database for all programmes
 # Todo: (130721) make a figure/schema of the internal data strucutre used, for better abililty to develop further
+# Todo: (130727) make parallell HTTP requests to speed up that bottleneck
 
-
+#130727 adjustment for Tableau: We rather create lots of doubles to be able to match every program that has a course,
+# and then filter them out with Tableau. That way we don't miss courses because we filter them wrong.
 #-------------------------------------------------------------------------------
 # Name: module2
 # Purpose:
@@ -16,10 +18,6 @@
 # in chronological order and all 3 years of the BSc program on one page.
 # Plan your exam periods and re-exams easier with this tool.
 # Tested on the TKDAT-pages but should work with any URL from studieportalen BSc programme.
-#
-#
-#
-#
 #
 # En kurskod kommer alltid först. När vi läst in en kurskod kan vi läsa in en href som säger att här kommer kursnamnet.
 # Sen kollar vi efter datumsträngar och lägger till dem i en dict med den aktuella kursen.
@@ -31,15 +29,12 @@
 # Samt upp till 3 datum
 # Sedan kommer nästa kurs, och repeat
 
-# När alla kurser är inlästa i en bra tabell kan vi outputta dem i en annan form. Det löser vi sen.
-
-
 # Author: natwei
 #
 # Created: 06/04/2013
 # Copyright: (c) natwei 2013
 # Licence: <your licence>
-# Using python 3.x with
+# Using python 3.3 with
 # http://docs.python-requests.org/en/latest/
 # http://docs.python.org/2/library/htmlparser.html
 # to run this type in the console for example
@@ -48,6 +43,7 @@
 import requests
 from html.parser import HTMLParser
 import datetime
+from prgdicts import BSCdict, MSCdict
 
 #Efter att ha läst in alla datum konverteras till detta format som är lämpligt för output
 class TentaInstans():
@@ -56,6 +52,7 @@ class TentaInstans():
         self.courseCode = None
         self.courseName = None
         self.grade = None
+        self.progr = None
 
     def __repr__(self): #formatting for text output
         return self.readableDate() +" " + self.fmem() + " " + self.courseCode+ " "+ self.courseName + " "
@@ -214,6 +211,15 @@ def makeUtdataFromIndata (datatabell, utdatatabell):
             i.progr = v.progr # added 130721...
             utdatatabell.append(i)
 
+def requestAndParse(prgdict, grade, parser):
+    for p in prgdict:
+        url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], grade)
+        data = requests.get (url).text
+        parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
+        parser.progr = p     #added 130721, same as above
+        parser.feed(data)
+
+
 def main():
     datatabell = {}
     parser = MyHTMLParser()
@@ -224,39 +230,33 @@ def main():
     #TO CREATE AN URL FOR PARSING:
 
 #START new functionality from 130721 for multi program
-    prgdict = {}
-    prgdict ['TKDAT'] = 871
-    prgdict ['TKITE'] = 875
-    prgdict ['TKTEM'] = 904
-    prgdict ['TKBIO'] = 870
-    prgdict ['TKARK'] = 868
-    prgdict ['TKATK'] = 829
-    prgdict ['TKAUT'] = 869
-    prgdict ['TKELT'] = 873
-    prgdict ['TKIEK'] = 874
-    prgdict ['TKKEF'] = 876
-    prgdict ['TKKMT'] = 877
-    prgdict ['TKMAS'] = 878
-    prgdict ['TKDES'] = 872
-    prgdict ['TKTFY'] = 879
-    prgdict ['TKVOV'] = 880
+    prgdict = BSCdict()
+#    for p in prgdict:
+    for grade in ['1', '2', '3']:
+        requestAndParse (prgdict,grade, parser)
+##            url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], grade)
+##            data = requests.get (url).text
+##            parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
+##            parser.progr = p     #added 130721, same as above
+##            parser.feed(data)
 
-    urllist = []
-    for p in prgdict:
-        for grade in ['1', '2', '3']:
-            url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], grade)
-            data = requests.get (url).text
-            parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
-            parser.progr = p     #added 130721, same as above
-            parser.feed(data)
 
+    prgdict = MSCdict()
+#    for p in prgdict:
+    for grade in ['1', '2']:
+        requestAndParse (prgdict, grade, parser)
+##            url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], grade)
+##            data = requests.get (url).text
+##            parser.grade = str ( int( grade)+3) #added 130721 for Tableau. Adds +3 to grade for Master programmes.
+##            parser.progr = p     #added 130721, same as above
+##            parser.feed(data)
 #end new functionality for multiprogram
 
     utdatatabell = []
     makeUtdataFromIndata(datatabell, utdatatabell)
-    sorterad = sorted (utdatatabell, key = TentaInstans.keyfunction )
+   # sorterad = sorted (utdatatabell, key = TentaInstans.keyfunction ) #no need to sort for tableau
     #printAsTable(sorterad) #For HTML
-    printAsCSV (sorterad)  #For use with Tableau
+    printAsCSV (utdatatabell)  #For use with Tableau
 
 if __name__ == '__main__':
     main()
