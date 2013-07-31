@@ -13,7 +13,7 @@ from html.parser import HTMLParser
 
 
 
-#Används vid inläsning
+#AnvÃ¤nds vid inlÃ¤sning
 class Tentadatum ():
     def __init__(self):
         self.year = None
@@ -30,6 +30,7 @@ class CourseEntry ():
         self.name = ""
         self.code = ""
         self.datumlista = []
+        self.progYear= [] #added 130731 to replace year % programme, for better Tableau funcitonality
         self.year = 0 #added 130721 for more functionality
         self.programme = "" #added 130721 for more functionality
 
@@ -94,12 +95,14 @@ class MyHTMLParser(HTMLParser):
                 if self.courseCode != data:
                         #print ("found new course code: ", data)
                         self.courseCode = data
-                        self.tabell[data] = CourseEntry ()
-                        self.tabell[data].code = data
-                        self.tabell[data].grade = self.grade #added 130721
-                        self.tabell[data].progr = self.progr #added 130721
+                        if not data in self.tabell: #130731 The same course code & tentadatum may appear in multiple programmes & years. They all share one entry in the indata-table
+                            self.tabell[data] = CourseEntry ()
+                            self.tabell[data].code = data
+                        self.tabell[data].progYear.append( (self.grade, self.progr)) #130731 adds the tuple of progYear, for better Tableau functionality. Shall replace grade, prog below
+                        #self.tabell[data].grade = self.grade #added 130721 //skapa en grade+progr-variabel och en lista av sådana här. löser det. 130731
+                        #self.tabell[data].progr = self.progr #added 130721 //på samma sätt som datumlista. det blir bra.
 
-            if self.findCourseName: #registrera namnet och stäng sedan av denna sökfunktion
+            if self.findCourseName: #registrera namnet och stÃ¤ng sedan av denna sÃ¶kfunktion
                         self.tabell[self.courseCode].name = data
                         self.findCourseName = False
             t = self.isDate (data)

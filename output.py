@@ -9,7 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
-#Efter att ha läst in alla datum konverteras till detta format som är lämpligt för output
+#Efter att ha lÃ¤st in alla datum konverteras till detta format som Ã¤r lÃ¤mpligt fÃ¶r output
 class TentaInstans():
     def __init__(self):
         self.date = None
@@ -46,9 +46,9 @@ class TentaInstans():
 
 
 def printAsCSV (sorterad):
-    #behöver inte fixa datum, det kan tableau filtrera bort
-    #behöver inte ta bort fmem, det kan tableau använda sig av
-    print ("Datum; Tid; Programkod; År; Kurskod; Namn; ")  #CSV - tabellstruktur. ska sedan lägga till fler fält här
+    #behÃ¶ver inte fixa datum, det kan tableau filtrera bort
+    #behÃ¶ver inte ta bort fmem, det kan tableau anvÃ¤nda sig av
+    print ("Datum; Tid; Programkod; Ã…r; Kurskod; Namn; ")  #CSV - tabellstruktur. ska sedan lÃ¤gga till fler fÃ¤lt hÃ¤r
     for x in sorterad:
         print (x.csv())
 
@@ -82,12 +82,15 @@ def makeUtdataFromIndata (datatabell, utdatatabell):
 
     for k,v in datatabell.items():
         for d in v.datumlista:
-            if d.time == "em":
-                d.time = "kv" #em kallas istället kväll, eftersom kv kommer efter fm, så om två tentor har samma datum kan string compare sortera dem rätt enligt "fm" "em"
-            i = TentaInstans()
-            i.date = d.year+d.month+d.day+d.time
-            i.courseCode = v.code
-            i.courseName = v.name
-            i.grade = v.grade  # added 130721 grade is ambiguous but means year -> 1,2,3 are the possible values
-            i.progr = v.progr # added 130721...
-            utdatatabell.append(i)
+            #if d.time == "em": #130731  deprecated, not needed for Tableau and we don't have backwards HTML compatability at the moment
+            #    d.time = "kv" #em kallas istÃ¤llet kvÃ¤ll, eftersom kv kommer efter fm, sÃ¥ om tvÃ¥ tentor har samma datum kan string compare sortera dem rÃ¤tt enligt "fm" "em"
+            for (p,y) in v.progYear:  #130731 now we want to create one list entry for each combination of coursecode, program, year
+                i = TentaInstans()
+                i.date = d.year+d.month+d.day+d.time
+                i.courseCode = v.code
+                i.courseName = v.name
+                #i.grade = v.grade  # added 130721 grade is ambiguous but means year -> 1,2,3 are the possible values
+                #i.progr = v.progr # added 130721...
+                i.progr = p #130731
+                i.grade = y #130731
+                utdatatabell.append(i)
