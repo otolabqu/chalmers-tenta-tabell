@@ -12,6 +12,8 @@ def main():
     parser.findCourseName = False
     parser.tabell = datatabell
 
+#    datatabell är en dict som tar en coursecode som key och get en courseEntry som value #130731
+
     prgdict = BSCdict()
     for grade in ['1', '2', '3']:
         #requestAndWriteFile(prgdict, grade, parser)
@@ -24,11 +26,16 @@ def main():
         #requestAndParse (prgdict, grade, parser)
         readFileAndParse (prgdict, grade, parser)
 
+    #debug check, manual check finds no doubles in indata key
     utdatatabell = []
-    makeUtdataFromIndata(datatabell, utdatatabell)
-   # sorterad = sorted (utdatatabell, key = TentaInstans.keyfunction ) #no need to sort for tableau
-    #printAsTable(sorterad) #For HTML
-    printAsCSV (utdatatabell)  #For use with Tableau
+
+    #doubles must have been created from indata -> utdata.
+    #indeed the indata table has 3x each date entry...
+    print (datatabell["TDA550"])
+
+    #makeUtdataFromIndata(datatabell, utdatatabell)
+
+    #printAsCSV (utdatatabell)  #For use with Tableau
 
 if __name__ == '__main__':
     main()

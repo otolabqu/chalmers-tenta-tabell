@@ -40,11 +40,6 @@ class TentaInstans():
             return "em"
         return "fm"
 
-
-
-
-
-
 def printAsCSV (sorterad):
     #behÃ¶ver inte fixa datum, det kan tableau filtrera bort
     #behÃ¶ver inte ta bort fmem, det kan tableau anvÃ¤nda sig av
@@ -82,8 +77,6 @@ def makeUtdataFromIndata (datatabell, utdatatabell):
 
     for k,v in datatabell.items():
         for d in v.datumlista:
-            #if d.time == "em": #130731  deprecated, not needed for Tableau and we don't have backwards HTML compatability at the moment
-            #    d.time = "kv" #em kallas istÃ¤llet kvÃ¤ll, eftersom kv kommer efter fm, sÃ¥ om tvÃ¥ tentor har samma datum kan string compare sortera dem rÃ¤tt enligt "fm" "em"
             for (p,y) in v.progYear:  #130731 now we want to create one list entry for each combination of coursecode, program, year
                 i = TentaInstans()
                 i.date = d.year+d.month+d.day+d.time

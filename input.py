@@ -24,6 +24,14 @@ class Tentadatum ():
     def __repr__(self):
         return self.year + " " + self.month + " " + self.day + " " + self.time
 
+    def __eq__ (self, other):  #this solved the list check problem with tentadatum in list, which was not done correctly before
+        if isinstance(other, self.__class__):
+            if self.year == other.year and self.month== other.month and self.day == other.day and self.time == other.time:
+                return True
+        return False
+
+    def __ne__ (self,other):
+        return not self.__eq__ (other)
 
 class CourseEntry ():
     def __init__(self):
@@ -99,15 +107,15 @@ class MyHTMLParser(HTMLParser):
                             self.tabell[data] = CourseEntry ()
                             self.tabell[data].code = data
                         self.tabell[data].progYear.append( (self.grade, self.progr)) #130731 adds the tuple of progYear, for better Tableau functionality. Shall replace grade, prog below
-                        #self.tabell[data].grade = self.grade #added 130721 //skapa en grade+progr-variabel och en lista av sådana här. löser det. 130731
-                        #self.tabell[data].progr = self.progr #added 130721 //på samma sätt som datumlista. det blir bra.
 
             if self.findCourseName: #registrera namnet och stÃ¤ng sedan av denna sÃ¶kfunktion
                         self.tabell[self.courseCode].name = data
                         self.findCourseName = False
             t = self.isDate (data)
             if t is not None:
-                self.tabell [self.courseCode].datumlista.append(t)
+                dl = self.tabell [self.courseCode].datumlista
+                if not t in dl: #fix to not create lots of doubles
+                    dl.append(t)
 
 def requestAndWriteFile (prgdict, grade, parser): #130731 added another middle step to waste less time
      for p in prgdict:
@@ -134,6 +142,8 @@ def readFileAndParse(prgdict, grade, parser):
         parser.progr = p     #added 130721, same as above
         parser.feed(data)
 
+
+#deprecated 130801 may not work properly
 def requestAndParse(prgdict, grade, parser): #to make it work you need to re-activate the ## lines below
     for p in prgdict:
         #print (p)
@@ -148,6 +158,6 @@ def requestAndParse(prgdict, grade, parser): #to make it work you need to re-act
          #WHY does the below reduce the data by 75% ???
        # if p[0:2] == "MP" and grade < 3: #offset the year for MSc programmes for more usefulness
         #    grade += 3   #in this case
-        ##parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
-        ##parser.progr = p     #added 130721, same as above
-        ##parser.feed(data)
+        parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
+        parser.progr = p     #added 130721, same as above
+        parser.feed(data)
