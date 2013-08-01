@@ -106,8 +106,15 @@ class MyHTMLParser(HTMLParser):
                         if not data in self.tabell: #130731 The same course code & tentadatum may appear in multiple programmes & years. They all share one entry in the indata-table
                             self.tabell[data] = CourseEntry ()
                             self.tabell[data].code = data
-                        self.tabell[data].progYear.append( (self.grade, self.progr)) #130731 adds the tuple of progYear, for better Tableau functionality. Shall replace grade, prog below
+                        #make them hashable and use dict instead. will be nicer 130801
 
+                        gp = (self.grade, self.progr)
+                        py = self.tabell[data].progYear
+                        if not gp in py:  #this solves the problem of making doubles when a course appears twice in the same prog, year. but code is ugly
+                            py.append (gp)
+                        #self.tabell[data].progYear.append( (self.grade, self.progr)) #130731 adds the tuple of progYear, for better Tableau functionality. Shall replace grade, prog below
+                        #if self.courseCode== "TIN092":
+                         #   print (py)
             if self.findCourseName: #registrera namnet och stÃ¤ng sedan av denna sÃ¶kfunktion
                         self.tabell[self.courseCode].name = data
                         self.findCourseName = False

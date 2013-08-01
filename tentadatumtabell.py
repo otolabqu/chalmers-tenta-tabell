@@ -26,16 +26,11 @@ def main():
         #requestAndParse (prgdict, grade, parser)
         readFileAndParse (prgdict, grade, parser)
 
-    #debug check, manual check finds no doubles in indata key
     utdatatabell = []
 
-    #doubles must have been created from indata -> utdata.
-    #indeed the indata table has 3x each date entry...
-    print (datatabell["TDA550"])
+    makeUtdataFromIndata(datatabell, utdatatabell)
 
-    #makeUtdataFromIndata(datatabell, utdatatabell)
-
-    #printAsCSV (utdatatabell)  #For use with Tableau
+    printAsCSV (utdatatabell)  #For use with Tableau
 
 if __name__ == '__main__':
     main()
@@ -45,7 +40,7 @@ if __name__ == '__main__':
 # Todo: Handle "Ges av inst"
 # Todo: Add to each tentainstans a tag specifying which programme it is part of. Then make a searchable database for all programmes
 # Todo: (130721) make a figure/schema of the internal data strucutre used, for better abililty to develop further
-# Todo: (130727) make parallell HTTP requests to speed up that bottleneck
+# Todo: (130727) make concurrent HTTP requests to speed up that bottleneck
 
 #130727 adjustment for Tableau: We rather create lots of doubles to be able to match every program that has a course,
 # and then filter them out with Tableau. That way we don't miss courses because we filter them wrong.

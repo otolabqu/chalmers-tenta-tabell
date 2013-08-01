@@ -21,10 +21,10 @@ class TentaInstans():
     def __repr__(self): #formatting for text output
         return self.readableDate() +" " + self.fmem() + " " + self.courseCode+ " "+ self.courseName + " "
 
-    def html (self, addDate):
-        basestring = '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'
-        datestring = self.readableDate() if addDate else ""
-        return basestring.format(datestring, self.fmem(), self.courseCode, self.courseName)
+##    def html (self, addDate): #deprecated, will not work 130801
+##        basestring = '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'
+##        datestring = self.readableDate() if addDate else ""
+##        return basestring.format(datestring, self.fmem(), self.courseCode, self.courseName)
 
     def csv (self):  #added 130721 for csv output for use with Tableau
         basestring = ' {}; {}; {}; {}; {}; {}'
@@ -36,9 +36,10 @@ class TentaInstans():
         return self.date[0:4]+'-'+self.date[4:6]+'-'+self.date[6:8]#+' ' + self.fmem() + ' ' + self.date[10:]
 
     def fmem(self): #corrects the previously introduced error of "em" -> "kv"
-        if self.date[8:10] == "kv":
-            return "em"
-        return "fm"
+        return self.date[8:10]
+        #if self.date[8:10] == "em":
+        #    return "em"
+        #return "fm"
 
 def printAsCSV (sorterad):
     #behÃ¶ver inte fixa datum, det kan tableau filtrera bort
