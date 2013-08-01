@@ -109,11 +109,45 @@ class MyHTMLParser(HTMLParser):
             if t is not None:
                 self.tabell [self.courseCode].datumlista.append(t)
 
-
-def requestAndParse(prgdict, grade, parser):
-    for p in prgdict:
-        url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], grade)
+def requestAndWriteFile (prgdict, grade, parser): #130731 added another middle step to waste less time
+     for p in prgdict:
+        filename = p + "-" + grade + ".txt"
+        f = open(filename, 'w')
+        url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], str(grade))
         data = requests.get (url).text
-        parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
+        f.write (data)
+        f.close()
+
+def readFileAndParse(prgdict, grade, parser):
+    for p in prgdict:
+        filename = p + "-" + grade + ".txt"
+        f = open(filename, 'r')
+        data = f.read()
+
+        outgrade = int(grade)
+
+         #WHY does the below reduce the data by 75% ???
+        if p[0:2] == "MP" and outgrade < 3: #offset the year for MSc programmes for more usefulness
+            outgrade += 3
+        #    grade += 3
+        parser.grade = outgrade #added 130721 for Tableau. Not the best way to do it, but will work
         parser.progr = p     #added 130721, same as above
         parser.feed(data)
+
+def requestAndParse(prgdict, grade, parser): #to make it work you need to re-activate the ## lines below
+    for p in prgdict:
+        #print (p)
+        url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], str(grade))
+        data = requests.get (url).text
+
+        grade = int (grade)
+
+        #print ("NEW PAGE")
+        #print (p, grade)
+        #print (data)
+         #WHY does the below reduce the data by 75% ???
+       # if p[0:2] == "MP" and grade < 3: #offset the year for MSc programmes for more usefulness
+        #    grade += 3   #in this case
+        ##parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
+        ##parser.progr = p     #added 130721, same as above
+        ##parser.feed(data)

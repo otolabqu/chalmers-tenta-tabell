@@ -14,11 +14,15 @@ def main():
 
     prgdict = BSCdict()
     for grade in ['1', '2', '3']:
-        requestAndParse (prgdict,grade, parser)
+        #requestAndWriteFile(prgdict, grade, parser)
+        #requestAndParse (prgdict,grade, parser)
+        readFileAndParse(prgdict,grade,parser)
 
     prgdict = MSCdict()
     for grade in ['1', '2']:
-        requestAndParse (prgdict, grade, parser)
+        #requestAndWriteFile(prgdict,grade,parser)
+        #requestAndParse (prgdict, grade, parser)
+        readFileAndParse (prgdict, grade, parser)
 
     utdatatabell = []
     makeUtdataFromIndata(datatabell, utdatatabell)

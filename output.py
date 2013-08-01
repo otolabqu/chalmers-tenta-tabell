@@ -28,7 +28,7 @@ class TentaInstans():
 
     def csv (self):  #added 130721 for csv output for use with Tableau
         basestring = ' {}; {}; {}; {}; {}; {}'
-        return basestring.format (self.readableDate(), self.fmem(), self.progr, self.grade, self.courseCode, self.courseName)
+        return basestring.format (self.readableDate(), self.fmem(), self.progr, str(self.grade), self.courseCode, self.courseName)
 
     def keyfunction (i1): #key function for list sorting
         return i1.date
@@ -48,7 +48,7 @@ class TentaInstans():
 def printAsCSV (sorterad):
     #behÃ¶ver inte fixa datum, det kan tableau filtrera bort
     #behÃ¶ver inte ta bort fmem, det kan tableau anvÃ¤nda sig av
-    print ("Datum; Tid; Programkod; Ã…r; Kurskod; Namn; ")  #CSV - tabellstruktur. ska sedan lÃ¤gga till fler fÃ¤lt hÃ¤r
+    print ("Datum; Tid; År; Programkod; Kurskod; Namn")  #CSV - tabellstruktur. ska sedan lÃ¤gga till fler fÃ¤lt hÃ¤r
     for x in sorterad:
         print (x.csv())
 
@@ -89,8 +89,6 @@ def makeUtdataFromIndata (datatabell, utdatatabell):
                 i.date = d.year+d.month+d.day+d.time
                 i.courseCode = v.code
                 i.courseName = v.name
-                #i.grade = v.grade  # added 130721 grade is ambiguous but means year -> 1,2,3 are the possible values
-                #i.progr = v.progr # added 130721...
                 i.progr = p #130731
                 i.grade = y #130731
                 utdatatabell.append(i)
