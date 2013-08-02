@@ -9,7 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
-#Efter att ha lÃ¤st in alla datum konverteras till detta format som Ã¤r lÃ¤mpligt fÃ¶r output
+#Efter att ha lÃƒÂ¤st in alla datum konverteras till detta format som ÃƒÂ¤r lÃƒÂ¤mpligt fÃƒÂ¶r output
 class TentaInstans():
     def __init__(self):
         self.date = None
@@ -42,9 +42,9 @@ class TentaInstans():
         #return "fm"
 
 def printAsCSV (sorterad):
-    #behÃ¶ver inte fixa datum, det kan tableau filtrera bort
-    #behÃ¶ver inte ta bort fmem, det kan tableau anvÃ¤nda sig av
-    print ("Datum; Tid; År; Programkod; Kurskod; Namn")  #CSV - tabellstruktur. ska sedan lÃ¤gga till fler fÃ¤lt hÃ¤r
+    #behÃƒÂ¶ver inte fixa datum, det kan tableau filtrera bort
+    #behÃƒÂ¶ver inte ta bort fmem, det kan tableau anvÃƒÂ¤nda sig av
+    print ("Datum; Tid; År; Programkod; Kurskod; Namn")  #CSV - tabellstruktur. ska sedan lÃƒÂ¤gga till fler fÃƒÂ¤lt hÃƒÂ¤r
     for x in sorterad:
         print (x.csv())
 

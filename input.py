@@ -9,11 +9,10 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 import requests
+#import codecs  #added 130801 hopefully to fix the Ã¥Ã¤Ã¶ problem
+
 from html.parser import HTMLParser
-
-
-
-#AnvÃ¤nds vid inlÃ¤sning
+#AnvÃƒÂ¤nds vid inlÃƒÂ¤sning
 class Tentadatum ():
     def __init__(self):
         self.year = None
@@ -58,16 +57,19 @@ class MyHTMLParser(HTMLParser):
 
 
         def isDate (self,text):
+            debug = False
             #format '11/03-2013 em M'
             text = text.lstrip().rstrip() #remove trailing whitespaces
             if len(text) == 15:
-                #print ("found 15 character data: ", text)
+                if debug:
+                    print ("found 15 character data: ", text)
                 day = text[0:2]
                 month = text[3:5]
                 year = text[6:10]
                 time = text[11:13]
                 if day.isdigit() and month.isdigit() and year.isdigit() and time.isalpha():
-                    #print (" found date ", text)
+                    if debug:
+                        print (" found date ", text)
                     t = Tentadatum()
                     t.year = year
                     t.month = month
@@ -85,25 +87,45 @@ class MyHTMLParser(HTMLParser):
                 nums = text[3:6]
                 if chars.isalpha() and nums.isdigit():
                     return True
+                #added format 'DATX02' for BSc projects #130802
+                chars = text[0:4]
+                nums  = text[4:6]
+                if chars.isalpha() and nums.isdigit():
+                    return True
 
         def handle_starttag(self, tag, attrs):
-           # print ("Encountered a start tag:", tag)
+            debug = False
+
             if tag == 'a':
-                #print (attrs)
+                if debug:
+                    if not tag in ["script", "td", "tr", "table"]:
+                        print ("sta tag:", tag)
+                        print (attrs)
                 for (k,v) in attrs:
                     if k == 'href':
                         if 'course?course_id=' in v:
-                            #print (k, " " , v)
+                            if debug:
+                                print (k, " " , v)
                             self.findCourseName = True
+            #else:
+             #   print ("ign tag: ",tag)
 
         def handle_endtag(self, tag):
-            pass #print ("Encountered an end tag :", tag)
+            debug = False
+            if debug:
+                if not tag in ["script", "td", "tr", "table", "b", "i", "u"]:
+                    print ("end tag :", tag)
         def handle_data(self, data):
+            debug = False
             if self.isCourseCode (data):
                 if self.courseCode != data:
-                        #print ("found new course code: ", data)
+                        if debug:
+                            print ("' ' ' ' ' ' ' ' found new course code: ", data)
                         self.courseCode = data
                         if not data in self.tabell: #130731 The same course code & tentadatum may appear in multiple programmes & years. They all share one entry in the indata-table
+                            if debug:
+                                print ("' ' ' ' ' ' ' ' not used before. creates new course entry ", data)
+
                             self.tabell[data] = CourseEntry ()
                             self.tabell[data].code = data
                         #make them hashable and use dict instead. will be nicer 130801
@@ -112,22 +134,28 @@ class MyHTMLParser(HTMLParser):
                         py = self.tabell[data].progYear
                         if not gp in py:  #this solves the problem of making doubles when a course appears twice in the same prog, year. but code is ugly
                             py.append (gp)
+                            if debug :
+                                print ("' ' ' ' ' ' ' ' added gradeprog combination to course entry", gp )
                         #self.tabell[data].progYear.append( (self.grade, self.progr)) #130731 adds the tuple of progYear, for better Tableau functionality. Shall replace grade, prog below
                         #if self.courseCode== "TIN092":
                          #   print (py)
-            if self.findCourseName: #registrera namnet och stÃ¤ng sedan av denna sÃ¶kfunktion
+            if self.findCourseName: #registrera namnet och stÃƒÂ¤ng sedan av denna sÃƒÂ¶kfunktion
                         self.tabell[self.courseCode].name = data
                         self.findCourseName = False
+                        if debug: print ("' ' ' ' ' ' ' ' Course name added: ", data, "\n' ' ' ' ' ' ' ' stops searching course name ")
             t = self.isDate (data)
             if t is not None:
                 dl = self.tabell [self.courseCode].datumlista
                 if not t in dl: #fix to not create lots of doubles
                     dl.append(t)
+                    if debug: print ("' ' ' ' ' ' ' '  added exam date to course entry")
 
-def requestAndWriteFile (prgdict, grade, parser): #130731 added another middle step to waste less time
+def requestAndWriteFile (prgdict, grade): #130731 added another middle step to waste less time
      for p in prgdict:
         filename = p + "-" + grade + ".txt"
-        f = open(filename, 'w')
+       # f = open(filename, 'w', encoding="utf-8")
+        f = open(filename, 'w')#, encoding="iso-8859-1")
+
         url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], str(grade))
         data = requests.get (url).text
         f.write (data)
@@ -136,9 +164,13 @@ def requestAndWriteFile (prgdict, grade, parser): #130731 added another middle s
 def readFileAndParse(prgdict, grade, parser):
     for p in prgdict:
         filename = p + "-" + grade + ".txt"
-        f = open(filename, 'r')
-        data = f.read()
+        f = open(filename, 'r' , )#encoding="iso-8859-1")
+        #f = codecs.open(filename, encoding='utf-8')
 
+
+        data = f.read()
+        #print (data)
+        #return
         outgrade = int(grade)
 
          #WHY does the below reduce the data by 75% ???
@@ -149,22 +181,3 @@ def readFileAndParse(prgdict, grade, parser):
         parser.progr = p     #added 130721, same as above
         parser.feed(data)
 
-
-#deprecated 130801 may not work properly
-def requestAndParse(prgdict, grade, parser): #to make it work you need to re-activate the ## lines below
-    for p in prgdict:
-        #print (p)
-        url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], str(grade))
-        data = requests.get (url).text
-
-        grade = int (grade)
-
-        #print ("NEW PAGE")
-        #print (p, grade)
-        #print (data)
-         #WHY does the below reduce the data by 75% ???
-       # if p[0:2] == "MP" and grade < 3: #offset the year for MSc programmes for more usefulness
-        #    grade += 3   #in this case
-        parser.grade = grade #added 130721 for Tableau. Not the best way to do it, but will work
-        parser.progr = p     #added 130721, same as above
-        parser.feed(data)

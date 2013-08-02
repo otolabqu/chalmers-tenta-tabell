@@ -5,45 +5,60 @@ from output import *
 import datetime
 from prgdicts import BSCdict, MSCdict
 
-def main():
-    datatabell = {}
-    parser = MyHTMLParser()
-    parser.courseCode = None
-    parser.findCourseName = False
-    parser.tabell = datatabell
 
-#    datatabell är en dict som tar en coursecode som key och get en courseEntry som value #130731
-
+def loopthrough(func):  #func is either "request" or parser, with different purposes
     prgdict = BSCdict()
     for grade in ['1', '2', '3']:
-        #requestAndWriteFile(prgdict, grade, parser)
-        #requestAndParse (prgdict,grade, parser)
-        readFileAndParse(prgdict,grade,parser)
+        if func =="request":
+            requestAndWriteFile(prgdict, grade)
+        else:
+            readFileAndParse(prgdict,grade,func)
 
     prgdict = MSCdict()
     for grade in ['1', '2']:
-        #requestAndWriteFile(prgdict,grade,parser)
-        #requestAndParse (prgdict, grade, parser)
-        readFileAndParse (prgdict, grade, parser)
+        if func =="request":
+            requestAndWriteFile(prgdict,grade)
+        else:
+            readFileAndParse (prgdict, grade, func)
 
-    utdatatabell = []
 
-    makeUtdataFromIndata(datatabell, utdatatabell)
 
-    printAsCSV (utdatatabell)  #For use with Tableau
+def main():
+
+    if(False):
+        loopthrough ("request")
+
+    if (True):
+        parser = MyHTMLParser()
+        parser.courseCode = None
+        parser.findCourseName = False
+        parser.tabell = {}
+        loopthrough (parser)
+        utdatatabell = []
+        makeUtdataFromIndata(parser.tabell, utdatatabell)
+        printAsCSV (utdatatabell)  #For use with Tableau
+
+#    datatabell är en dict som tar en coursecode som key och get en courseEntry som value #130731
+
+
+
 
 if __name__ == '__main__':
     main()
 
 # Todo: Add the V or H letter to indicate the location
 # Todo: Add ical or gcal output
-# Todo: Handle "Ges av inst"
+# Todo: Handle "Ges av inst"  i input.py
 # Todo: Add to each tentainstans a tag specifying which programme it is part of. Then make a searchable database for all programmes
 # Todo: (130721) make a figure/schema of the internal data strucutre used, for better abililty to develop further
 # Todo: (130727) make concurrent HTTP requests to speed up that bottleneck
-
+# Todo: (130802) Add post-processing to fix the åäöÅÄÖ problem
 #130727 adjustment for Tableau: We rather create lots of doubles to be able to match every program that has a course,
 # and then filter them out with Tableau. That way we don't miss courses because we filter them wrong.
+#130802 : the course codes for BSc projects don't match the pattern since they have a AAAX00 pattern. adds support for that.
+
+
+
 #-------------------------------------------------------------------------------
 # Name: module2
 # Purpose:
