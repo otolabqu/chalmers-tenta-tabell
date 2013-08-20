@@ -47,17 +47,37 @@ if __name__ == '__main__':
     main()
 
 # Todo: Add the V or H letter to indicate the location
-# Todo: Add ical or gcal output
+# Todo: Add ical or gcal output  http://productforums.google.com/forum/#!topic/calendar/Ovj6BNTQNL0   should be usable with URL actions
+#          http://tardate.com/tools/kalinka.htm
 # Todo: Handle "Ges av inst"  i input.py
 # Todo: Add to each tentainstans a tag specifying which programme it is part of. Then make a searchable database for all programmes
 # Todo: (130721) make a figure/schema of the internal data strucutre used, for better abililty to develop further
 # Todo: (130727) make concurrent HTTP requests to speed up that bottleneck
 # Todo: (130802) Add post-processing to fix the åäöÅÄÖ problem
+# Todo: (130820) Make automatic get all the new program URLS from the search form on  https://www.student.chalmers.se/sp/program_list
 #130727 adjustment for Tableau: We rather create lots of doubles to be able to match every program that has a course,
 # and then filter them out with Tableau. That way we don't miss courses because we filter them wrong.
 #130802 : the course codes for BSc projects don't match the pattern since they have a AAAX00 pattern. adds support for that.
 
-
+#130806 Todo: Add the following programmes
+##https://www.student.chalmers.se/sp/programplan?program_id=1041
+##https://www.student.chalmers.se/sp/programplan?program_id=1036
+##https://www.student.chalmers.se/sp/programplan?program_id=1022
+##https://www.student.chalmers.se/sp/programplan?program_id=1037
+##https://www.student.chalmers.se/sp/programplan?program_id=1057&grade=1&conc_id=-1
+##https://www.student.chalmers.se/sp/programplan?program_id=1038&grade=1&conc_id=-1
+##https://www.student.chalmers.se/sp/programplan?program_id=1021
+##https://www.student.chalmers.se/sp/programplan?program_id=1039
+##https://www.student.chalmers.se/sp/programplan?program_id=1040&grade=3&conc_id=-1
+##https://www.student.chalmers.se/sp/programplan?program_id=1043
+##https://www.student.chalmers.se/sp/programplan?program_id=1042
+##https://www.student.chalmers.se/sp/programplan?program_id=1044
+##https://www.student.chalmers.se/sp/programplan?program_id=1020
+##https://www.student.chalmers.se/sp/programplan?program_id=1055
+##https://www.student.chalmers.se/sp/programplan?program_id=1056
+##https://www.student.chalmers.se/sp/programplan?program_id=1059
+##https://www.student.chalmers.se/sp/programplan?program_id=1045
+##
 
 #-------------------------------------------------------------------------------
 # Name: module2
