@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -11,7 +13,8 @@
 import requests
 #import codecs  #added 130801 hopefully to fix the Ã¥Ã¤Ã¶ problem
 
-from html.parser import HTMLParser
+#from html.parser import HTMLParser  #python 3
+from HTMLParser import HTMLParser    #python 2.7
 #AnvÃƒÂ¤nds vid inlÃƒÂ¤sning
 class Tentadatum ():
     def __init__(self):
@@ -157,9 +160,13 @@ def requestAndWriteFile (prgdict, grade): #130731 added another middle step to w
         f = open(filename, 'w')#, encoding="iso-8859-1")
 
         url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (prgdict[p], str(grade))
+        print (url)
         data = requests.get (url).text
+        print ("got data, will write to file")
+        data = data.encode ('utf-8')
         f.write (data)
         f.close()
+        print ("wrote data to file " , filename)
 
 def readFileAndParse(prgdict, grade, parser):
     for p in prgdict:
