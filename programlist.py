@@ -129,6 +129,10 @@ def main():
         f.write (s)
     f.close()
     print ("wrote data to file " , filename)
+    return outerDict
+
+def getProgramDict ():
+    return main()
 
 if __name__ == '__main__':
     main()

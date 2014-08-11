@@ -153,6 +153,53 @@ class MyHTMLParser(HTMLParser):
                     dl.append(t)
                     if debug: print ("' ' ' ' ' ' ' '  added exam date to course entry")
 
+def getGradesFromHp(hp):
+    if hp == "NA":
+        return [] #some special cases have no hp and we just ignore them for now. 4 cases as of 14-08-11
+    grades = ['1']
+    if hp == '120.0':
+        grades.append('2')
+    if hp in ['180.0', '300.0']:
+        grades.append('2')
+        grades.append('3')
+    return grades
+
+def getFileName(prg, grade):
+    filename = prg['acronym'] + grade + ".txt"
+    return filename
+
+def requestAndWriteFile2 (id,prg):
+    grades = getGradesFromHp(prg['hp'])
+
+    for grade in grades:
+        filename = getFileName(prg,grade)
+        #filename = prg['acronym'] + grade + ".txt"
+        f = open(filename, 'w')#, encoding="iso-8859-1")
+
+        url = 'https://www.student.chalmers.se/sp/programplan?program_id={}&grade={}&conc_id=-1'.format (id, grade)
+        print (url)
+        data = requests.get (url).text
+        print ("got data, will write to file")
+        data = data.encode ('utf-8')
+        f.write (data)
+        f.close()
+        print ("wrote data to file " , filename)
+
+def readFileAndParse2 (prg, parser):
+    grades = getGradesFromHp(prg['hp'])
+    for grade in grades:
+        filename = getFileName(prg,grade)
+        f = open(filename, 'r') #encoding="iso-8859-1")
+        data = f.read()
+        outgrade = int(grade)
+        acronym = prg['acronym']
+             #WHY does the below reduce the data by 75% ???
+        if acronym [0:2] == "MP" and outgrade < 3: #offset the year for MSc programmes for more usefulness
+            outgrade += 3
+        parser.grade = outgrade
+        parser.progr = acronym
+        parser.feed(data)
+
 def requestAndWriteFile (prgdict, grade): #130731 added another middle step to waste less time
      for p in prgdict:
         filename = p + "-" + grade + ".txt"

@@ -2,10 +2,28 @@
 
 from input import *
 from output import *
-import datetime
+from programlist import *
 from prgdicts import BSCdict, MSCdict
 
+def downloadAllPrograms(prgdict): ##added on 140811 to download all programs from current data on the website
+    for k in prgdict:
+        requestAndWriteFile2(k, prgdict[k])
 
+def parseAllPrograms (prg):
+    parser = MyHTMLParser()
+    parser.courseCode = None
+    parser.findCourseName = False
+    parser.tabell = {}
+
+    for k in prg:
+        readFileAndParse2(prg[k],parser)
+
+    utdatatabell = []
+    makeUtdataFromIndata(parser.tabell, utdatatabell)
+    printAsCSV (utdatatabell)  #For use with Tableau
+
+
+#old method. no longer in use, replaced by the newer downloadAllPrograms, and more.
 def loopthrough(func):  #func is either "request" or parser, with different purposes
     prgdict = BSCdict()
     for grade in ['1', '2', '3']:
@@ -21,23 +39,12 @@ def loopthrough(func):  #func is either "request" or parser, with different purp
         else:
             readFileAndParse (prgdict, grade, func)
 
-
-
 def main():
-
+    newprgdict = getProgramDict()
     if(False):
-        loopthrough ("request")
-
+        downloadAllPrograms(newprgdict)
     if (True):
-        parser = MyHTMLParser()
-        parser.courseCode = None
-        parser.findCourseName = False
-        parser.tabell = {}
-        loopthrough (parser)
-        utdatatabell = []
-        makeUtdataFromIndata(parser.tabell, utdatatabell)
-        printAsCSV (utdatatabell)  #For use with Tableau
-
+        parseAllPrograms(newprgdict)
 #    datatabell är en dict som tar en coursecode som key och get en courseEntry som value #130731
 
 
